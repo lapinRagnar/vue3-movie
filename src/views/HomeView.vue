@@ -5,19 +5,59 @@
         <img class="featured-img" src="https://media.istockphoto.com/photos/spiral-galaxy-illustration-of-milky-way-picture-id481229372?k=20&m=481229372&s=612x612&w=0&h=r-vNa2_NRHAyaQJj6o2UlGTfa9Dju2M8NH1AIpk9oHQ=" alt="">
         <div class="detail">
           <h3>Naruto</h3>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem nemo, ducimus culpa repellendus sequi nulla? Alias sint, quo sequi veniam provident ipsum hic ad repellat adipisci, quidem aliquam asperiores quod?</p>
+          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quidem nemo, 
+            ?</p>
         </div>
       </router-link>
+    </div>
+
+    <form @submit.prevent="searchMovives" class="search-box">
+      <input type="text" placeholder="rechercher film ?" v-model="search" >
+      <input type="submit" value="rechercher" >
+    </form>
+
+    <div class="movies-list">
+      <div class="movie" v-for="(movie,i) in movies" :key="i">
+        {{ movie.Title }}
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 
+import {ref} from 'vue'
+import env from '@/env'
+
 
 export default {
   name: 'HomeView',
+  setup(){
+    const search = ref('')
+    const movies = ref([])
+    const searchMovives = () => {
+      if(search.value != ''){
+        console.log(search.value)
+        console.log(`http://www.omdbapi.com/?t=${search.value}&apikey=${env.apikey}`)
+        fetch(`http://www.omdbapi.com/?apikey=${env.apikey}&s=${search.value}`)
+          .then(response => response.json())
+          .then(data => { 
+            console.log(data);
+            console.log("data.Search",data.Search)
+            movies.value = data.Search
+            search.value = ''
+            console.log("film", movies);
 
+          })
+      }
+    }
+
+    return {
+      search,
+      movies,
+      searchMovives
+    }
+  }
 }
 </script>
 
@@ -52,6 +92,57 @@ export default {
 
       p{
         color: white;
+      }
+    }
+  }
+
+  .search-box{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+
+    input{
+      display: block;
+      appearance: none;
+      border: none;
+      outline: none;
+      background: none;
+
+      &[type="text"]{
+        width: 100%;
+        color: #fff;
+        background-color: #496583;
+        font-size: 20px;
+        padding: 10px 16px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        transition: 0.4s;
+
+        &::placeholder{
+          color: #f3f3f3
+        }
+
+        &:focus{ 
+          box-shadow: 1px 7px 10px rgba(111, 111, 31, 0.519);
+        }
+      }
+
+      &[type="submit"]{
+        width: 100%;
+        max-width: 300px;
+        background-color: #42b883;
+        padding: 16px;
+        border-radius: 8px;
+        color: #fff;
+        font-size: 20px;
+        text-transform: uppercase;
+        transition: 0.4s;
+
+        &:active{
+          background-color: #3b8070;
+        }
       }
     }
   }
